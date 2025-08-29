@@ -16,3 +16,9 @@ variable "common_tags" {
         Environment = "dev"
     }
 }
+
+variable "zone_name" {
+    type = string
+    default = "devopswithmsvs.uno"
+  
+}

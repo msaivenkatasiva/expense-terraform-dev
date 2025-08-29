@@ -142,8 +142,8 @@ resource "aws_security_group_rule" "bastion_from_public" {
 ###bastion servers are accepting traffic from public
 resource "aws_security_group_rule" "ansible_from_public" {
   type = "ingress"
-  from_port = 80
-  to_port = 80
+  from_port = 22
+  to_port = 22
   protocol = "tcp"
   cidr_blocks = ["0.0.0.0/0"]
   security_group_id = module.ansible.sg_id

@@ -36,6 +36,7 @@ module "ansible" {
     name = "${var.project_name}-${var.environment}-ansible"
     ami = data.aws_ami.ami_info.id
     subnet_id = local.public_subnet_id
+    user_data = file("expense.sh")
     instance_type = "t3.micro"
     vpc_security_group_ids = [data.aws_ssm_parameter.ansible_sg_id.value]
     tags = merge(
@@ -44,4 +45,39 @@ module "ansible" {
             Name = "${var.project_name}-${var.environment}-ansible"
         }
     )
+    depends_on = [ module.backend,module.frontend ] #while we launch theese servers, ingeneral all the servers will be launched parllelly and ansible starts configuring, if incase ansible gets launched first and it tries to connect to remaining servers and gets fail. So, we use depends on command, then after launching all the remaining ansible gets launched.
+}
+
+module "records" {
+  source  = "terraform-aws-modules/route53/aws//modules/records"
+  version = "~> 3.0"
+
+  zone_name = var.zone_name
+
+  records = [
+    {
+      name    = "backend"
+      type    = "A"
+      ttl     = 1
+      records = [
+        module.backend.private_ip
+      ]
+    },
+    {
+      name    = "frontend"
+      type    = "A"
+      ttl     = 1
+      records = [
+        module.frontend.private_ip
+      ]
+    },
+    {
+      name    = ""#domain name
+      type    = "A"
+      ttl     = 1
+      records = [
+        module.frontend.public_ip
+      ]
+    }
+  ]
 }

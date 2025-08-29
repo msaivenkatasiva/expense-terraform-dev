@@ -15,3 +15,8 @@ variable "common_tags" {
         terraform = true
     }
 }
+
+variable "zone_name" {
+    type = string
+    default = "devopswithmsvs.uno"
+}
